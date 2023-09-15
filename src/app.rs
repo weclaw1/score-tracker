@@ -87,14 +87,13 @@ impl SimpleComponent for App {
         }
     }
 
-    // Initialize the component.
     fn init(
         page: Self::Init,
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         let score_page = ScorePage::builder()
-            .launch(vec!["Player 1".to_string(), "Player 2".to_string()])
+            .launch(2)
             .detach();
 
         let timer_page = TimerPage::builder()
@@ -103,7 +102,6 @@ impl SimpleComponent for App {
 
         let model = App { page, score_page, timer_page };
 
-        // Insert the code generation of the view! macro here
         let widgets = view_output!();
 
         widgets
