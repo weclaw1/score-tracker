@@ -1,25 +1,24 @@
 use relm4::prelude::*;
 use relm4::gtk::prelude::*;
 
-use crate::score_header::ScoreHeaderInput;
+use crate::player_name_row::PlayerNameRowInput;
 
-pub struct ScoreHeaderCell {
-    player_name: gtk::EntryBuffer,
+pub struct PlayerNameCell {
+    value: gtk::EntryBuffer,
 }
 
 #[relm4::factory(pub)]
-impl FactoryComponent for ScoreHeaderCell {
+impl FactoryComponent for PlayerNameCell {
     type Init = String;
     type Input = ();
     type Output = ();
     type CommandOutput = ();
-    type ParentInput = ScoreHeaderInput;
+    type ParentInput = PlayerNameRowInput;
     type ParentWidget = gtk::Box;
 
     view! {
         gtk::Entry {
-            set_buffer: &self.player_name,
-            connect_activate: |_| {},
+            set_buffer: &self.value,
         }
     }
 
@@ -29,7 +28,7 @@ impl FactoryComponent for ScoreHeaderCell {
         _sender: FactorySender<Self>,
     ) -> Self {
         Self {
-            player_name: gtk::EntryBuffer::new(Some(init)),
+            value: gtk::EntryBuffer::new(Some(init)),
         }
     }
 }

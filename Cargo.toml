@@ -13,4 +13,4 @@ features = ["macros", "libadwaita", "gnome_44"]
 
 [dependencies.relm4-icons]
 version = "0.6.0"
-features = ["table", "hourglass"]
+features = ["table", "hourglass", "plus", "person-add-regular", "person-subtract-regular", "cross-filled"]
