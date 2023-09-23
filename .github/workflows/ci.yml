@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev
+          sudo apt install -y libgtk-4-dev libadwaita-1-dev
 
       - name: Run cargo check
         uses: actions-rs/cargo@v1
@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev
+          sudo apt install -y libgtk-4-dev libadwaita-1-dev
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
@@ -75,7 +75,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev
+          sudo apt install -y libgtk-4-dev libadwaita-1-dev
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@v1
@@ -101,7 +101,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev
+          sudo apt install -y libgtk-4-dev libadwaita-1-dev
 
       - name: Run cargo build
         uses: actions-rs/cargo@v1
