@@ -9,7 +9,7 @@ edition = "2021"
 
 [dependencies.relm4]
 version = "0.6.2"
-features = ["macros", "libadwaita", "gnome_43"]
+features = ["macros", "libadwaita"]
 
 [dependencies.relm4-icons]
 version = "0.6.0"
