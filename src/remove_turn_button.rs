@@ -1,5 +1,5 @@
-use relm4::prelude::*;
 use relm4::gtk::prelude::*;
+use relm4::prelude::*;
 use relm4_icons::icon_name;
 
 use crate::score_page::ScorePageInput;
@@ -27,11 +27,7 @@ impl FactoryComponent for RemoveTurnButton {
         },
     }
 
-    fn init_model(
-        _init: Self::Init,
-        _index: &DynamicIndex,
-        _sender: FactorySender<Self>,
-    ) -> Self {
+    fn init_model(_init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
         Self
     }
 

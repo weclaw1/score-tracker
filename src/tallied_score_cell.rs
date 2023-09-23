@@ -1,5 +1,5 @@
-use relm4::prelude::*;
 use relm4::gtk::prelude::*;
+use relm4::prelude::*;
 
 use crate::tallied_score_row::TalliedScoreRowInput;
 
@@ -38,13 +38,7 @@ impl FactoryComponent for TalliedScoreCell {
         }
     }
 
-    fn init_model(
-        init: Self::Init,
-        _index: &DynamicIndex,
-        _sender: FactorySender<Self>,
-    ) -> Self {
-        Self {
-            score: init,
-        }
+    fn init_model(init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
+        Self { score: init }
     }
 }

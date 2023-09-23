@@ -1,5 +1,5 @@
-use relm4::prelude::*;
 use adw::prelude::*;
+use relm4::prelude::*;
 
 pub struct TimerPage;
 
@@ -18,15 +18,14 @@ impl SimpleComponent for TimerPage {
 
                 gtk::Label {
                     #[watch]
-                    set_label: &format!("Timer Page"),
+                    set_label: "Timer Page",
                     set_margin_all: 5,
                 }
             }
         }
     }
 
-    fn update(&mut self, _msg: (), _sender: ComponentSender<Self>) {
-    }
+    fn update(&mut self, _msg: (), _sender: ComponentSender<Self>) {}
 
     fn init(
         _init: Self::Init,

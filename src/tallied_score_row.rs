@@ -47,10 +47,9 @@ impl SimpleComponent for TalliedScoreRow {
                 self.tallied_score_cells.guard().pop_back();
             }
             TalliedScoreRowInput::ScoreChanged(player_index, score) => {
-                self.tallied_score_cells.guard().send(
-                    player_index,
-                    TalliedScoreCellInput::ScoreChanged(score),
-                );
+                self.tallied_score_cells
+                    .guard()
+                    .send(player_index, TalliedScoreCellInput::ScoreChanged(score));
             }
         }
     }
@@ -60,7 +59,8 @@ impl SimpleComponent for TalliedScoreRow {
         _root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut tallied_score_cells = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
+        let mut tallied_score_cells =
+            FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
         for _ in 1..=init {
             tallied_score_cells.guard().push_back(0);
         }

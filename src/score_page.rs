@@ -1,9 +1,15 @@
-use relm4::{prelude::*, factory::FactoryVecDeque};
 use relm4::gtk::prelude::*;
+use relm4::{factory::FactoryVecDeque, prelude::*};
 use relm4_icons::icon_name;
 
 use crate::tallied_score_row::TalliedScoreRowInput;
-use crate::{turn_score_row::{TurnScoreRow, TurnScoreRowInput}, turn_number::{TurnNumber, TurnNumberInput}, remove_turn_button::RemoveTurnButton, player_name_row::{PlayerNameRow, self, PlayerNameRowInput}, tallied_score_row::TalliedScoreRow};
+use crate::{
+    player_name_row::{PlayerNameRow, PlayerNameRowInput},
+    remove_turn_button::RemoveTurnButton,
+    tallied_score_row::TalliedScoreRow,
+    turn_number::{TurnNumber, TurnNumberInput},
+    turn_score_row::{TurnScoreRow, TurnScoreRowInput},
+};
 
 pub struct ScorePage {
     players: usize,
@@ -21,7 +27,7 @@ pub enum ScorePageInput {
     RemovePlayer,
     AddRow,
     RemoveScoreRow(DynamicIndex),
-    ScoreChanged(DynamicIndex, DynamicIndex, i32)
+    ScoreChanged(DynamicIndex, DynamicIndex, i32),
 }
 
 #[relm4::component(pub)]
@@ -82,7 +88,7 @@ impl SimpleComponent for ScorePage {
                     set_hexpand: true,
                     set_orientation: gtk::Orientation::Vertical,
                     set_vexpand: true,
-    
+
                     append = model.player_name_row.widget(),
 
                     #[name="main_column_scrolled_window"]
@@ -143,16 +149,23 @@ impl SimpleComponent for ScorePage {
             ScorePageInput::AddPlayer => {
                 self.players = self.players.saturating_add(1);
                 self.player_name_row.emit(PlayerNameRowInput::AddPlayer);
-                self.turn_score_rows.guard().broadcast(TurnScoreRowInput::AddPlayer);
+                self.turn_score_rows
+                    .guard()
+                    .broadcast(TurnScoreRowInput::AddPlayer);
                 self.tallied_score_row.emit(TalliedScoreRowInput::AddPlayer);
                 self.player_scores.iter_mut().for_each(|row| row.push(0));
             }
             ScorePageInput::RemovePlayer => {
                 self.players = self.players.saturating_sub(1);
                 self.player_name_row.emit(PlayerNameRowInput::RemovePlayer);
-                self.turn_score_rows.guard().broadcast(TurnScoreRowInput::RemovePlayer);
-                self.tallied_score_row.emit(TalliedScoreRowInput::RemovePlayer);
-                self.player_scores.iter_mut().for_each(|row| { row.pop(); });
+                self.turn_score_rows
+                    .guard()
+                    .broadcast(TurnScoreRowInput::RemovePlayer);
+                self.tallied_score_row
+                    .emit(TalliedScoreRowInput::RemovePlayer);
+                self.player_scores.iter_mut().for_each(|row| {
+                    row.pop();
+                });
             }
             ScorePageInput::AddRow => {
                 self.turn_score_rows.guard().push_back(self.players);
@@ -163,24 +176,40 @@ impl SimpleComponent for ScorePage {
             ScorePageInput::RemoveScoreRow(index) => {
                 self.turn_score_rows.guard().remove(index.current_index());
                 self.turn_numbers.guard().remove(index.current_index());
-                self.turn_numbers.guard().broadcast(TurnNumberInput::UpdateTurnNumber);
-                self.remove_turn_buttons.guard().remove(index.current_index());
+                self.turn_numbers
+                    .guard()
+                    .broadcast(TurnNumberInput::UpdateTurnNumber);
+                self.remove_turn_buttons
+                    .guard()
+                    .remove(index.current_index());
                 let removed_score_row = self.player_scores.remove(index.current_index());
-                removed_score_row.into_iter()
+                removed_score_row
+                    .into_iter()
                     .enumerate()
                     .filter(|(_, score)| *score != 0)
-                    .map(|(player_index, _)| (
-                        player_index, 
-                        self.player_scores.iter().map(|row| row[player_index]).sum(),
-                    ))
+                    .map(|(player_index, _)| {
+                        (
+                            player_index,
+                            self.player_scores.iter().map(|row| row[player_index]).sum(),
+                        )
+                    })
                     .for_each(|(player_index, score)| {
-                        self.tallied_score_row.emit(TalliedScoreRowInput::ScoreChanged(player_index, score));
+                        self.tallied_score_row
+                            .emit(TalliedScoreRowInput::ScoreChanged(player_index, score));
                     });
             }
             ScorePageInput::ScoreChanged(row_index, player_index, score) => {
                 self.player_scores[row_index.current_index()][player_index.current_index()] = score;
-                let tallied_player_score = self.player_scores.iter().map(|row| row[player_index.current_index()]).sum();
-                self.tallied_score_row.emit(TalliedScoreRowInput::ScoreChanged(player_index.current_index(), tallied_player_score));
+                let tallied_player_score = self
+                    .player_scores
+                    .iter()
+                    .map(|row| row[player_index.current_index()])
+                    .sum();
+                self.tallied_score_row
+                    .emit(TalliedScoreRowInput::ScoreChanged(
+                        player_index.current_index(),
+                        tallied_player_score,
+                    ));
             }
         }
     }
@@ -190,9 +219,7 @@ impl SimpleComponent for ScorePage {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let player_name_row = PlayerNameRow::builder()
-            .launch(init)
-            .detach();
+        let player_name_row = PlayerNameRow::builder().launch(init).detach();
 
         let mut turn_numbers = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
         for _ in 1..=10 {
@@ -200,7 +227,8 @@ impl SimpleComponent for ScorePage {
         }
         //turn_numbers.guard().push_back(());
 
-        let mut remove_turn_buttons = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
+        let mut remove_turn_buttons =
+            FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
         for _ in 1..=10 {
             remove_turn_buttons.guard().push_back(());
         }
@@ -212,10 +240,8 @@ impl SimpleComponent for ScorePage {
         }
         //score_rows.guard().push_back(init);
 
-        let tallied_score_row = TalliedScoreRow::builder()
-            .launch(init)
-            .detach();
-    
+        let tallied_score_row = TalliedScoreRow::builder().launch(init).detach();
+
         let model = Self {
             players: init,
             player_name_row,

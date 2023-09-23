@@ -1,5 +1,5 @@
-use relm4::prelude::*;
 use relm4::gtk::prelude::*;
+use relm4::prelude::*;
 
 use crate::player_name_row::PlayerNameRowInput;
 
@@ -23,11 +23,7 @@ impl FactoryComponent for PlayerNameCell {
         }
     }
 
-    fn init_model(
-        init: Self::Init,
-        _index: &DynamicIndex,
-        _sender: FactorySender<Self>,
-    ) -> Self {
+    fn init_model(init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
         Self {
             value: gtk::EntryBuffer::new(Some(init)),
         }

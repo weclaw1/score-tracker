@@ -92,22 +92,22 @@ impl SimpleComponent for App {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let score_page = ScorePage::builder()
-            .launch(2)
-            .detach();
+        let score_page = ScorePage::builder().launch(2).detach();
 
-        let timer_page = TimerPage::builder()
-            .launch(())
-            .detach();
+        let timer_page = TimerPage::builder().launch(()).detach();
 
-        let model = App { page, score_page, timer_page };
+        let model = App {
+            page,
+            score_page,
+            timer_page,
+        };
 
         let widgets = view_output!();
 
         widgets
-        .view_title
-        .bind_property("title-visible", &widgets.view_bar, "reveal")
-        .build();
+            .view_title
+            .bind_property("title-visible", &widgets.view_bar, "reveal")
+            .build();
 
         ComponentParts { model, widgets }
     }

@@ -1,5 +1,5 @@
-use relm4::prelude::*;
 use relm4::gtk::prelude::ButtonExt;
+use relm4::prelude::*;
 
 use crate::score_page::ScorePageInput;
 
@@ -29,11 +29,7 @@ impl FactoryComponent for TurnNumber {
         }
     }
 
-    fn init_model(
-        _init: Self::Init,
-        index: &DynamicIndex,
-        _sender: FactorySender<Self>,
-    ) -> Self {
+    fn init_model(_init: Self::Init, index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
         Self {
             index: index.clone(),
             value: index.current_index() + 1,
