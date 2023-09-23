@@ -18,6 +18,7 @@ impl FactoryComponent for PlayerNameCell {
 
     view! {
         gtk::Entry {
+            set_hexpand: true,
             set_buffer: &self.value,
         }
     }

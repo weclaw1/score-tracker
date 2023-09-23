@@ -93,7 +93,7 @@ impl SimpleComponent for App {
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         let score_page = ScorePage::builder()
-            .launch(4)
+            .launch(2)
             .detach();
 
         let timer_page = TimerPage::builder()
