@@ -3,6 +3,7 @@ use relm4::prelude::*;
 
 use crate::tallied_score_row::TalliedScoreRowInput;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 pub enum TalliedScoreCellInput {
     ScoreChanged(i32),
@@ -18,15 +19,11 @@ pub struct TalliedScoreCell {
 
 impl TalliedScoreCell {
     fn css_class_list(&self) -> Vec<&str> {
-        let mut classes = vec!["frame"];
-        if self.first_place && self.last_place {
-            classes.push("success");
-        } else if self.first_place {
-            classes.push("success");
-        } else if self.last_place {
-            classes.push("error");
+        match (self.first_place, self.last_place) {
+            (true, true) | (true, false) => vec!["frame", "success"],
+            (false, true) => vec!["frame", "error"],
+            (false, false) => vec!["frame"],
         }
-        classes
     }
 }
 
