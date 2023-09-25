@@ -1,13 +1,40 @@
+use std::str::FromStr;
+
 use adw::prelude::*;
+use heck::ToTitleCase;
 use relm4::prelude::*;
 use relm4_icons::icon_name;
 
 use crate::{score_page::ScorePage, timer_page::TimerPage};
 
+const INITIAL_PLAYERS: usize = 2;
+const INITIAL_SCORE_ROWS: usize = 1000;
+
 #[derive(Debug)]
 pub enum Page {
     Score,
     Timer,
+}
+
+impl std::fmt::Display for Page {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Page::Score => write!(f, "score"),
+            Page::Timer => write!(f, "timer"),
+        }
+    }
+}
+
+impl FromStr for Page {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "score" => Ok(Page::Score),
+            "timer" => Ok(Page::Timer),
+            _ => Err(anyhow::anyhow!("Invalid page name")),
+        }
+    }
 }
 
 pub struct App {
@@ -41,7 +68,10 @@ impl SimpleComponent for App {
                     #[name="view_title"]
                     set_title_widget = &adw::ViewSwitcherTitle {
                         set_stack: Some(&stack),
-                        set_title: "Score Tracker",
+                        #[watch]
+                        set_title: model.page.to_string().to_title_case().as_str(),
+                        #[chain(build())]
+                        bind_property: ("title-visible", &view_bar, "reveal"),
                     },
                 },
 
@@ -78,11 +108,7 @@ impl SimpleComponent for App {
     fn update(&mut self, msg: Self::Input, _sender: ComponentSender<Self>) {
         match msg {
             AppMsg::SetPage(name) => {
-                self.page = match name.as_str() {
-                    "score" => Page::Score,
-                    "timer" => Page::Timer,
-                    _ => unreachable!(),
-                }
+                self.page = Page::from_str(name.as_str()).unwrap();
             }
         }
     }
@@ -92,7 +118,9 @@ impl SimpleComponent for App {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let score_page = ScorePage::builder().launch(2).detach();
+        let score_page = ScorePage::builder()
+            .launch((INITIAL_PLAYERS, INITIAL_SCORE_ROWS))
+            .detach();
 
         let timer_page = TimerPage::builder().launch(()).detach();
 
@@ -103,11 +131,6 @@ impl SimpleComponent for App {
         };
 
         let widgets = view_output!();
-
-        widgets
-            .view_title
-            .bind_property("title-visible", &widgets.view_bar, "reveal")
-            .build();
 
         ComponentParts { model, widgets }
     }

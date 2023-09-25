@@ -59,11 +59,8 @@ impl SimpleComponent for TalliedScoreRow {
         _root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut tallied_score_cells =
-            FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for _ in 1..=init {
-            tallied_score_cells.guard().push_back(0);
-        }
+        let tallied_score_cells =
+            FactoryVecDeque::from_iter(vec![0; init], gtk::Box::default(), sender.input_sender());
 
         let model = Self {
             tallied_score_cells,

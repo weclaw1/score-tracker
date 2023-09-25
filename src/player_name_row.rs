@@ -49,11 +49,11 @@ impl SimpleComponent for PlayerNameRow {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut player_name_cells =
-            FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for n in 1..=init {
-            player_name_cells.guard().push_back(format!("Player {}", n));
-        }
+        let player_name_cells = FactoryVecDeque::from_iter(
+            (1..=init).map(|n| format!("Player {}", n)),
+            gtk::Box::default(),
+            sender.input_sender(),
+        );
 
         let model = Self { player_name_cells };
 

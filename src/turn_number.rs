@@ -1,4 +1,4 @@
-use relm4::gtk::prelude::ButtonExt;
+use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
 use crate::score_page::ScorePageInput;
@@ -23,7 +23,9 @@ impl FactoryComponent for TurnNumber {
     type ParentWidget = gtk::Box;
 
     view! {
-        gtk::Button {
+        gtk::Label {
+            set_margin_top: 7,
+            set_margin_bottom: 8,
             #[watch]
             set_label: &format!("{}.", self.value),
         }

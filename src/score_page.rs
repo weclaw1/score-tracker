@@ -21,6 +21,77 @@ pub struct ScorePage {
     player_scores: Vec<Vec<i32>>,
 }
 
+impl ScorePage {
+    fn add_player(&mut self) {
+        self.players = self.players.saturating_add(1);
+        self.player_name_row.emit(PlayerNameRowInput::AddPlayer);
+        self.turn_score_rows
+            .guard()
+            .broadcast(TurnScoreRowInput::AddPlayer);
+        self.tallied_score_row.emit(TalliedScoreRowInput::AddPlayer);
+        self.player_scores.iter_mut().for_each(|row| row.push(0));
+    }
+
+    fn remove_player(&mut self) {
+        self.players = self.players.saturating_sub(1);
+        self.player_name_row.emit(PlayerNameRowInput::RemovePlayer);
+        self.turn_score_rows
+            .guard()
+            .broadcast(TurnScoreRowInput::RemovePlayer);
+        self.tallied_score_row
+            .emit(TalliedScoreRowInput::RemovePlayer);
+        self.player_scores.iter_mut().for_each(|row| {
+            row.pop();
+        });
+    }
+
+    fn add_row(&mut self) {
+        self.turn_score_rows.guard().push_back(self.players);
+        self.turn_numbers.guard().push_back(());
+        self.remove_turn_buttons.guard().push_back(());
+        self.player_scores.push(vec![0; self.players]);
+    }
+
+    fn calculate_tallied_score(player_index: usize, player_scores: &[Vec<i32>]) -> i32 {
+        player_scores.iter().map(|row| row[player_index]).sum()
+    }
+
+    fn remove_score_row(&mut self, index: usize) {
+        self.turn_score_rows.guard().remove(index);
+        self.turn_numbers.guard().remove(index);
+        self.turn_numbers
+            .guard()
+            .broadcast(TurnNumberInput::UpdateTurnNumber);
+        self.remove_turn_buttons.guard().remove(index);
+        let removed_score_row = self.player_scores.remove(index);
+        removed_score_row
+            .into_iter()
+            .enumerate()
+            .filter(|(_, score)| *score != 0)
+            .map(|(player_index, _)| {
+                (
+                    player_index,
+                    ScorePage::calculate_tallied_score(player_index, &self.player_scores),
+                )
+            })
+            .for_each(|(player_index, score)| {
+                self.tallied_score_row
+                    .emit(TalliedScoreRowInput::ScoreChanged(player_index, score));
+            });
+    }
+
+    fn score_changed(&mut self, row_index: usize, player_index: usize, score: i32) {
+        self.player_scores[row_index][player_index] = score;
+        let tallied_player_score =
+            ScorePage::calculate_tallied_score(player_index, &self.player_scores);
+        self.tallied_score_row
+            .emit(TalliedScoreRowInput::ScoreChanged(
+                player_index,
+                tallied_player_score,
+            ));
+    }
+}
+
 #[derive(Debug)]
 pub enum ScorePageInput {
     AddPlayer,
@@ -32,7 +103,7 @@ pub enum ScorePageInput {
 
 #[relm4::component(pub)]
 impl SimpleComponent for ScorePage {
-    type Init = usize;
+    type Init = (usize, usize);
     type Input = ScorePageInput;
     type Output = ();
 
@@ -55,6 +126,7 @@ impl SimpleComponent for ScorePage {
                         set_margin_start: 5,
                         set_halign: gtk::Align::End,
                         set_icon_name: icon_name::PERSON_ADD_REGULAR,
+                        add_css_class: "success",
                         connect_clicked => ScorePageInput::AddPlayer,
                     },
 
@@ -80,6 +152,7 @@ impl SimpleComponent for ScorePage {
                         set_halign: gtk::Align::End,
                         set_valign: gtk::Align::End,
                         set_icon_name: icon_name::PLUS,
+                        add_css_class: "suggested-action",
                         connect_clicked => ScorePageInput::AddRow,
                     },
                 },
@@ -93,6 +166,7 @@ impl SimpleComponent for ScorePage {
 
                     #[name="main_column_scrolled_window"]
                     gtk::ScrolledWindow {
+                        set_margin_bottom: 4,
                         set_vexpand: true,
                         set_valign: gtk::Align::Fill,
                         set_vscrollbar_policy: gtk::PolicyType::External,
@@ -120,6 +194,7 @@ impl SimpleComponent for ScorePage {
                         set_margin_end: 5,
                         set_halign: gtk::Align::Start,
                         set_icon_name: icon_name::PERSON_SUBTRACT_REGULAR,
+                        add_css_class: "error",
                         connect_clicked => ScorePageInput::RemovePlayer,
                     },
 
@@ -146,71 +221,15 @@ impl SimpleComponent for ScorePage {
 
     fn update(&mut self, message: ScorePageInput, _sender: ComponentSender<Self>) {
         match message {
-            ScorePageInput::AddPlayer => {
-                self.players = self.players.saturating_add(1);
-                self.player_name_row.emit(PlayerNameRowInput::AddPlayer);
-                self.turn_score_rows
-                    .guard()
-                    .broadcast(TurnScoreRowInput::AddPlayer);
-                self.tallied_score_row.emit(TalliedScoreRowInput::AddPlayer);
-                self.player_scores.iter_mut().for_each(|row| row.push(0));
-            }
-            ScorePageInput::RemovePlayer => {
-                self.players = self.players.saturating_sub(1);
-                self.player_name_row.emit(PlayerNameRowInput::RemovePlayer);
-                self.turn_score_rows
-                    .guard()
-                    .broadcast(TurnScoreRowInput::RemovePlayer);
-                self.tallied_score_row
-                    .emit(TalliedScoreRowInput::RemovePlayer);
-                self.player_scores.iter_mut().for_each(|row| {
-                    row.pop();
-                });
-            }
-            ScorePageInput::AddRow => {
-                self.turn_score_rows.guard().push_back(self.players);
-                self.turn_numbers.guard().push_back(());
-                self.remove_turn_buttons.guard().push_back(());
-                self.player_scores.push(vec![0; self.players]);
-            }
-            ScorePageInput::RemoveScoreRow(index) => {
-                self.turn_score_rows.guard().remove(index.current_index());
-                self.turn_numbers.guard().remove(index.current_index());
-                self.turn_numbers
-                    .guard()
-                    .broadcast(TurnNumberInput::UpdateTurnNumber);
-                self.remove_turn_buttons
-                    .guard()
-                    .remove(index.current_index());
-                let removed_score_row = self.player_scores.remove(index.current_index());
-                removed_score_row
-                    .into_iter()
-                    .enumerate()
-                    .filter(|(_, score)| *score != 0)
-                    .map(|(player_index, _)| {
-                        (
-                            player_index,
-                            self.player_scores.iter().map(|row| row[player_index]).sum(),
-                        )
-                    })
-                    .for_each(|(player_index, score)| {
-                        self.tallied_score_row
-                            .emit(TalliedScoreRowInput::ScoreChanged(player_index, score));
-                    });
-            }
-            ScorePageInput::ScoreChanged(row_index, player_index, score) => {
-                self.player_scores[row_index.current_index()][player_index.current_index()] = score;
-                let tallied_player_score = self
-                    .player_scores
-                    .iter()
-                    .map(|row| row[player_index.current_index()])
-                    .sum();
-                self.tallied_score_row
-                    .emit(TalliedScoreRowInput::ScoreChanged(
-                        player_index.current_index(),
-                        tallied_player_score,
-                    ));
-            }
+            ScorePageInput::AddPlayer => self.add_player(),
+            ScorePageInput::RemovePlayer => self.remove_player(),
+            ScorePageInput::AddRow => self.add_row(),
+            ScorePageInput::RemoveScoreRow(index) => self.remove_score_row(index.current_index()),
+            ScorePageInput::ScoreChanged(row_index, player_index, score) => self.score_changed(
+                row_index.current_index(),
+                player_index.current_index(),
+                score,
+            ),
         }
     }
 
@@ -219,37 +238,37 @@ impl SimpleComponent for ScorePage {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let player_name_row = PlayerNameRow::builder().launch(init).detach();
+        let (initial_players, initial_score_rows) = init;
+        let player_name_row = PlayerNameRow::builder().launch(initial_players).detach();
 
-        let mut turn_numbers = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for _ in 1..=10 {
-            turn_numbers.guard().push_back(());
-        }
-        //turn_numbers.guard().push_back(());
+        let turn_numbers = FactoryVecDeque::from_iter(
+            vec![(); initial_score_rows],
+            gtk::Box::default(),
+            sender.input_sender(),
+        );
 
-        let mut remove_turn_buttons =
-            FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for _ in 1..=10 {
-            remove_turn_buttons.guard().push_back(());
-        }
-        //remove_turn_buttons.guard().push_back(());
+        let remove_turn_buttons = FactoryVecDeque::from_iter(
+            vec![(); initial_score_rows],
+            gtk::Box::default(),
+            sender.input_sender(),
+        );
 
-        let mut turn_score_rows = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for _ in 1..=10 {
-            turn_score_rows.guard().push_back(init);
-        }
-        //score_rows.guard().push_back(init);
+        let turn_score_rows = FactoryVecDeque::from_iter(
+            vec![initial_players; initial_score_rows],
+            gtk::Box::default(),
+            sender.input_sender(),
+        );
 
-        let tallied_score_row = TalliedScoreRow::builder().launch(init).detach();
+        let tallied_score_row = TalliedScoreRow::builder().launch(initial_players).detach();
 
         let model = Self {
-            players: init,
+            players: initial_players,
             player_name_row,
             turn_score_rows,
             turn_numbers,
             remove_turn_buttons,
             tallied_score_row,
-            player_scores: vec![vec![0; init]; 10],
+            player_scores: vec![vec![0; initial_players]; initial_score_rows],
         };
 
         let turn_score_row_box = model.turn_score_rows.widget();
@@ -258,5 +277,45 @@ impl SimpleComponent for ScorePage {
         let widgets = view_output!();
 
         ComponentParts { model, widgets }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_tallied_score() {
+        let player_scores = vec![vec![10, 20, 30], vec![5, 15, 25], vec![15, 25, 35]];
+        let tallied_score = ScorePage::calculate_tallied_score(1, &player_scores);
+        assert_eq!(tallied_score, 60);
+    }
+
+    #[test]
+    fn test_calculate_tallied_score_empty() {
+        let player_scores = vec![];
+        let tallied_score = ScorePage::calculate_tallied_score(0, &player_scores);
+        assert_eq!(tallied_score, 0);
+    }
+
+    #[test]
+    fn test_calculate_tallied_score_first_player() {
+        let player_scores = vec![vec![10, 20, 30], vec![5, 15, 25], vec![15, 25, 35]];
+        let tallied_score = ScorePage::calculate_tallied_score(0, &player_scores);
+        assert_eq!(tallied_score, 30);
+    }
+
+    #[test]
+    fn test_calculate_tallied_score_last_player() {
+        let player_scores = vec![vec![10, 20, 30], vec![5, 15, 25], vec![15, 25, 35]];
+        let tallied_score = ScorePage::calculate_tallied_score(2, &player_scores);
+        assert_eq!(tallied_score, 90);
+    }
+
+    #[test]
+    fn test_calculate_tallied_score_with_negative_score() {
+        let player_scores = vec![vec![10, 20, -30], vec![5, 15, 25], vec![15, 25, -35]];
+        let tallied_score = ScorePage::calculate_tallied_score(2, &player_scores);
+        assert_eq!(tallied_score, -40);
     }
 }

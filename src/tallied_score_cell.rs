@@ -22,11 +22,19 @@ impl FactoryComponent for TalliedScoreCell {
     type ParentWidget = gtk::Box;
 
     view! {
-        gtk::Button {
+        gtk::Box {
+            add_css_class: "frame",
             set_hexpand: true,
-            set_halign: gtk::Align::Fill,
-            #[watch]
-            set_label: &self.score.to_string(),
+
+            gtk::Label {
+                set_halign: gtk::Align::Center,
+                set_hexpand: true,
+                add_css_class: "title-2",
+                set_width_chars: 10,
+
+                #[watch]
+                set_label: &self.score.to_string(),
+            }
         }
     }
 
