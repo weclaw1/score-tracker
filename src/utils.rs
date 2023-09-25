@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::hash::Hash;
 
-pub fn symetric_difference_between_two_arrays<'a, T>(a: &'a[T], b: &'a[T]) -> Vec<&'a T> 
+pub fn symetric_difference_between_two_arrays<'a, T>(a: &'a [T], b: &'a [T]) -> Vec<&'a T>
 where
     T: Eq + Hash,
 {
@@ -25,7 +25,6 @@ mod tests {
         for element in result {
             assert!(expected_values.contains(element));
         }
-
     }
 
     #[test]

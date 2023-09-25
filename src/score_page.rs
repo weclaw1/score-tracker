@@ -46,8 +46,10 @@ impl ScorePage {
         self.player_scores.iter_mut().for_each(|row| {
             row.pop();
         });
-        self.players_with_highest_score.retain(|player_index| *player_index < self.players);
-        self.players_with_lowest_score.retain(|player_index| *player_index < self.players);
+        self.players_with_highest_score
+            .retain(|player_index| *player_index < self.players);
+        self.players_with_lowest_score
+            .retain(|player_index| *player_index < self.players);
     }
 
     fn add_row(&mut self) {
@@ -134,7 +136,8 @@ impl ScorePage {
     }
 
     fn update_players_with_lowest_score(&mut self) {
-        let updated_players_with_lowest_score = Self::find_players_with_lowest_score(&self.player_scores);
+        let updated_players_with_lowest_score =
+            Self::find_players_with_lowest_score(&self.player_scores);
         let players_with_lowest_score_diff = utils::symetric_difference_between_two_arrays(
             &self.players_with_lowest_score,
             &updated_players_with_lowest_score,
@@ -143,13 +146,17 @@ impl ScorePage {
             .into_iter()
             .for_each(|player_index| {
                 self.tallied_score_row
-                    .emit(TalliedScoreRowInput::LastPlaceChanged(*player_index, updated_players_with_lowest_score.contains(player_index)));
+                    .emit(TalliedScoreRowInput::LastPlaceChanged(
+                        *player_index,
+                        updated_players_with_lowest_score.contains(player_index),
+                    ));
             });
         self.players_with_lowest_score = updated_players_with_lowest_score;
     }
 
     fn update_players_with_highest_score(&mut self) {
-        let updated_players_with_highest_score = Self::find_players_with_highest_score(&self.player_scores);
+        let updated_players_with_highest_score =
+            Self::find_players_with_highest_score(&self.player_scores);
         let players_with_highest_score_diff = utils::symetric_difference_between_two_arrays(
             &self.players_with_highest_score,
             &updated_players_with_highest_score,
@@ -158,7 +165,10 @@ impl ScorePage {
             .into_iter()
             .for_each(|player_index| {
                 self.tallied_score_row
-                    .emit(TalliedScoreRowInput::FirstPlaceChanged(*player_index, updated_players_with_highest_score.contains(player_index)));
+                    .emit(TalliedScoreRowInput::FirstPlaceChanged(
+                        *player_index,
+                        updated_players_with_highest_score.contains(player_index),
+                    ));
             });
         self.players_with_highest_score = updated_players_with_highest_score;
     }
@@ -309,7 +319,7 @@ impl SimpleComponent for ScorePage {
                 sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
                 sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
             }
-            ScorePageInput::AddRow => { 
+            ScorePageInput::AddRow => {
                 self.add_row();
                 sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
                 sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
@@ -329,7 +339,9 @@ impl SimpleComponent for ScorePage {
                 sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
             }
             ScorePageInput::UpdatePlayersWithLowestScore => self.update_players_with_lowest_score(),
-            ScorePageInput::UpdatePlayersWithHighestScore => self.update_players_with_highest_score(),
+            ScorePageInput::UpdatePlayersWithHighestScore => {
+                self.update_players_with_highest_score()
+            }
         }
     }
 
@@ -426,11 +438,7 @@ mod tests {
 
     #[test]
     fn test_calculate_tallied_scores() {
-        let player_scores = vec![
-            vec![10, 20, -30],
-            vec![20, 30, -40],
-            vec![30, 40, -50],
-        ];
+        let player_scores = vec![vec![10, 20, -30], vec![20, 30, -40], vec![30, 40, -50]];
         let tallied_scores = ScorePage::calculate_tallied_scores(&player_scores);
         assert_eq!(tallied_scores.len(), 3);
         assert_eq!(tallied_scores[0], 60);
@@ -447,11 +455,7 @@ mod tests {
 
     #[test]
     fn test_find_players_with_lowest_score() {
-        let player_scores = vec![
-            vec![10, 20, 1],
-            vec![20, 30, 2],
-            vec![30, 40, 3],
-        ];
+        let player_scores = vec![vec![10, 20, 1], vec![20, 30, 2], vec![30, 40, 3]];
         let players_with_lowest_score = ScorePage::find_players_with_lowest_score(&player_scores);
         assert_eq!(players_with_lowest_score.len(), 1);
         assert_eq!(players_with_lowest_score[0], 2);
@@ -466,11 +470,7 @@ mod tests {
 
     #[test]
     fn test_find_players_with_lowest_score_tie() {
-        let player_scores = vec![
-            vec![10, 20, 20],
-            vec![20, 30, 30],
-            vec![30, 40, 10],
-        ];
+        let player_scores = vec![vec![10, 20, 20], vec![20, 30, 30], vec![30, 40, 10]];
         let players_with_lowest_score = ScorePage::find_players_with_lowest_score(&player_scores);
         assert_eq!(players_with_lowest_score.len(), 2);
         assert!(players_with_lowest_score.contains(&0));
@@ -479,11 +479,7 @@ mod tests {
 
     #[test]
     fn test_find_players_with_highest_score() {
-        let player_scores = vec![
-            vec![10, 20, 1],
-            vec![20, 30, 2],
-            vec![30, 40, 3],
-        ];
+        let player_scores = vec![vec![10, 20, 1], vec![20, 30, 2], vec![30, 40, 3]];
         let players_with_highest_score = ScorePage::find_players_with_highest_score(&player_scores);
         assert_eq!(players_with_highest_score.len(), 1);
         assert_eq!(players_with_highest_score[0], 1);
@@ -498,11 +494,7 @@ mod tests {
 
     #[test]
     fn test_find_players_with_highest_score_tie() {
-        let player_scores = vec![
-            vec![10, 20, 40],
-            vec![20, 30, 30],
-            vec![30, 40, 20],
-        ];
+        let player_scores = vec![vec![10, 20, 40], vec![20, 30, 30], vec![30, 40, 20]];
         let players_with_highest_score = ScorePage::find_players_with_highest_score(&player_scores);
         assert_eq!(players_with_highest_score.len(), 2);
         assert!(players_with_highest_score.contains(&1));

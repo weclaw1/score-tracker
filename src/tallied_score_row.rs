@@ -54,14 +54,16 @@ impl SimpleComponent for TalliedScoreRow {
                     .send(player_index, TalliedScoreCellInput::ScoreChanged(score));
             }
             TalliedScoreRowInput::FirstPlaceChanged(player_index, first_place) => {
-                self.tallied_score_cells
-                    .guard()
-                    .send(player_index, TalliedScoreCellInput::FirstPlaceChanged(first_place));
+                self.tallied_score_cells.guard().send(
+                    player_index,
+                    TalliedScoreCellInput::FirstPlaceChanged(first_place),
+                );
             }
             TalliedScoreRowInput::LastPlaceChanged(player_index, last_place) => {
-                self.tallied_score_cells
-                    .guard()
-                    .send(player_index, TalliedScoreCellInput::LastPlaceChanged(last_place));
+                self.tallied_score_cells.guard().send(
+                    player_index,
+                    TalliedScoreCellInput::LastPlaceChanged(last_place),
+                );
             }
         }
     }

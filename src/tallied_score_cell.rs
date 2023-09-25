@@ -72,8 +72,8 @@ impl FactoryComponent for TalliedScoreCell {
     }
 
     fn init_model(init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
-        Self { 
-            score: init, 
+        Self {
+            score: init,
             first_place: false,
             last_place: false,
         }
