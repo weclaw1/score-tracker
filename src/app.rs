@@ -8,7 +8,7 @@ use relm4_icons::icon_name;
 use crate::{score_page::ScorePage, timer_page::TimerPage};
 
 const INITIAL_PLAYERS: usize = 2;
-const INITIAL_SCORE_ROWS: usize = 1000;
+const INITIAL_SCORE_ROWS: usize = 1;
 
 #[derive(Debug)]
 pub enum Page {

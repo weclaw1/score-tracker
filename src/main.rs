@@ -12,6 +12,7 @@ mod timer_page;
 mod turn_number;
 mod turn_score_cell;
 mod turn_score_row;
+mod utils;
 
 fn main() {
     let app = RelmApp::new("com.github.weclaw1.ScoreTracker");

@@ -3,6 +3,7 @@ use relm4::{factory::FactoryVecDeque, prelude::*};
 use relm4_icons::icon_name;
 
 use crate::tallied_score_row::TalliedScoreRowInput;
+use crate::utils;
 use crate::{
     player_name_row::{PlayerNameRow, PlayerNameRowInput},
     remove_turn_button::RemoveTurnButton,
@@ -19,11 +20,13 @@ pub struct ScorePage {
     remove_turn_buttons: FactoryVecDeque<RemoveTurnButton>,
     tallied_score_row: Controller<TalliedScoreRow>,
     player_scores: Vec<Vec<i32>>,
+    players_with_highest_score: Vec<usize>,
+    players_with_lowest_score: Vec<usize>,
 }
 
 impl ScorePage {
     fn add_player(&mut self) {
-        self.players = self.players.saturating_add(1);
+        self.players += 1;
         self.player_name_row.emit(PlayerNameRowInput::AddPlayer);
         self.turn_score_rows
             .guard()
@@ -33,7 +36,7 @@ impl ScorePage {
     }
 
     fn remove_player(&mut self) {
-        self.players = self.players.saturating_sub(1);
+        self.players -= 1;
         self.player_name_row.emit(PlayerNameRowInput::RemovePlayer);
         self.turn_score_rows
             .guard()
@@ -43,6 +46,8 @@ impl ScorePage {
         self.player_scores.iter_mut().for_each(|row| {
             row.pop();
         });
+        self.players_with_highest_score.retain(|player_index| *player_index < self.players);
+        self.players_with_lowest_score.retain(|player_index| *player_index < self.players);
     }
 
     fn add_row(&mut self) {
@@ -54,6 +59,15 @@ impl ScorePage {
 
     fn calculate_tallied_score(player_index: usize, player_scores: &[Vec<i32>]) -> i32 {
         player_scores.iter().map(|row| row[player_index]).sum()
+    }
+
+    fn calculate_tallied_scores(player_scores: &[Vec<i32>]) -> Vec<i32> {
+        if player_scores.is_empty() {
+            return Vec::new();
+        }
+        (0..player_scores[0].len())
+            .map(|player_index| Self::calculate_tallied_score(player_index, player_scores))
+            .collect()
     }
 
     fn remove_score_row(&mut self, index: usize) {
@@ -71,7 +85,7 @@ impl ScorePage {
             .map(|(player_index, _)| {
                 (
                     player_index,
-                    ScorePage::calculate_tallied_score(player_index, &self.player_scores),
+                    Self::calculate_tallied_score(player_index, &self.player_scores),
                 )
             })
             .for_each(|(player_index, score)| {
@@ -90,6 +104,64 @@ impl ScorePage {
                 tallied_player_score,
             ));
     }
+
+    fn find_players_with_lowest_score(player_scores: &[Vec<i32>]) -> Vec<usize> {
+        let tallied_scores = Self::calculate_tallied_scores(player_scores);
+        let lowest_score = tallied_scores.iter().min();
+        match lowest_score {
+            Some(lowest_score) => tallied_scores
+                .iter()
+                .enumerate()
+                .filter(|(_, score)| *score == lowest_score)
+                .map(|(player_index, _)| player_index)
+                .collect(),
+            None => Vec::new(),
+        }
+    }
+
+    fn find_players_with_highest_score(player_scores: &[Vec<i32>]) -> Vec<usize> {
+        let tallied_scores = Self::calculate_tallied_scores(player_scores);
+        let highest_score = tallied_scores.iter().max();
+        match highest_score {
+            Some(highest_score) => tallied_scores
+                .iter()
+                .enumerate()
+                .filter(|(_, score)| *score == highest_score)
+                .map(|(player_index, _)| player_index)
+                .collect(),
+            None => Vec::new(),
+        }
+    }
+
+    fn update_players_with_lowest_score(&mut self) {
+        let updated_players_with_lowest_score = Self::find_players_with_lowest_score(&self.player_scores);
+        let players_with_lowest_score_diff = utils::symetric_difference_between_two_arrays(
+            &self.players_with_lowest_score,
+            &updated_players_with_lowest_score,
+        );
+        players_with_lowest_score_diff
+            .into_iter()
+            .for_each(|player_index| {
+                self.tallied_score_row
+                    .emit(TalliedScoreRowInput::LastPlaceChanged(*player_index, updated_players_with_lowest_score.contains(player_index)));
+            });
+        self.players_with_lowest_score = updated_players_with_lowest_score;
+    }
+
+    fn update_players_with_highest_score(&mut self) {
+        let updated_players_with_highest_score = Self::find_players_with_highest_score(&self.player_scores);
+        let players_with_highest_score_diff = utils::symetric_difference_between_two_arrays(
+            &self.players_with_highest_score,
+            &updated_players_with_highest_score,
+        );
+        players_with_highest_score_diff
+            .into_iter()
+            .for_each(|player_index| {
+                self.tallied_score_row
+                    .emit(TalliedScoreRowInput::FirstPlaceChanged(*player_index, updated_players_with_highest_score.contains(player_index)));
+            });
+        self.players_with_highest_score = updated_players_with_highest_score;
+    }
 }
 
 #[derive(Debug)]
@@ -99,6 +171,8 @@ pub enum ScorePageInput {
     AddRow,
     RemoveScoreRow(DynamicIndex),
     ScoreChanged(DynamicIndex, DynamicIndex, i32),
+    UpdatePlayersWithHighestScore,
+    UpdatePlayersWithLowestScore,
 }
 
 #[relm4::component(pub)]
@@ -195,6 +269,10 @@ impl SimpleComponent for ScorePage {
                         set_halign: gtk::Align::Start,
                         set_icon_name: icon_name::PERSON_SUBTRACT_REGULAR,
                         add_css_class: "error",
+
+                        #[watch]
+                        set_sensitive: model.players > 1,
+
                         connect_clicked => ScorePageInput::RemovePlayer,
                     },
 
@@ -219,17 +297,39 @@ impl SimpleComponent for ScorePage {
         }
     }
 
-    fn update(&mut self, message: ScorePageInput, _sender: ComponentSender<Self>) {
+    fn update(&mut self, message: ScorePageInput, sender: ComponentSender<Self>) {
         match message {
-            ScorePageInput::AddPlayer => self.add_player(),
-            ScorePageInput::RemovePlayer => self.remove_player(),
-            ScorePageInput::AddRow => self.add_row(),
-            ScorePageInput::RemoveScoreRow(index) => self.remove_score_row(index.current_index()),
-            ScorePageInput::ScoreChanged(row_index, player_index, score) => self.score_changed(
-                row_index.current_index(),
-                player_index.current_index(),
-                score,
-            ),
+            ScorePageInput::AddPlayer => {
+                self.add_player();
+                sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
+                sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+            }
+            ScorePageInput::RemovePlayer => {
+                self.remove_player();
+                sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
+                sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+            }
+            ScorePageInput::AddRow => { 
+                self.add_row();
+                sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
+                sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+            }
+            ScorePageInput::RemoveScoreRow(index) => {
+                self.remove_score_row(index.current_index());
+                sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
+                sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+            }
+            ScorePageInput::ScoreChanged(row_index, player_index, score) => {
+                self.score_changed(
+                    row_index.current_index(),
+                    player_index.current_index(),
+                    score,
+                );
+                sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
+                sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+            }
+            ScorePageInput::UpdatePlayersWithLowestScore => self.update_players_with_lowest_score(),
+            ScorePageInput::UpdatePlayersWithHighestScore => self.update_players_with_highest_score(),
         }
     }
 
@@ -269,12 +369,17 @@ impl SimpleComponent for ScorePage {
             remove_turn_buttons,
             tallied_score_row,
             player_scores: vec![vec![0; initial_players]; initial_score_rows],
+            players_with_highest_score: Vec::new(),
+            players_with_lowest_score: Vec::new(),
         };
 
         let turn_score_row_box = model.turn_score_rows.widget();
         let turn_numbers_box = model.turn_numbers.widget();
         let remove_turn_buttons_box = model.remove_turn_buttons.widget();
         let widgets = view_output!();
+
+        sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
+        sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
 
         ComponentParts { model, widgets }
     }
@@ -317,5 +422,90 @@ mod tests {
         let player_scores = vec![vec![10, 20, -30], vec![5, 15, 25], vec![15, 25, -35]];
         let tallied_score = ScorePage::calculate_tallied_score(2, &player_scores);
         assert_eq!(tallied_score, -40);
+    }
+
+    #[test]
+    fn test_calculate_tallied_scores() {
+        let player_scores = vec![
+            vec![10, 20, -30],
+            vec![20, 30, -40],
+            vec![30, 40, -50],
+        ];
+        let tallied_scores = ScorePage::calculate_tallied_scores(&player_scores);
+        assert_eq!(tallied_scores.len(), 3);
+        assert_eq!(tallied_scores[0], 60);
+        assert_eq!(tallied_scores[1], 90);
+        assert_eq!(tallied_scores[2], -120);
+    }
+
+    #[test]
+    fn test_calculate_tallied_scores_empty() {
+        let player_scores = vec![];
+        let tallied_scores = ScorePage::calculate_tallied_scores(&player_scores);
+        assert_eq!(tallied_scores.len(), 0);
+    }
+
+    #[test]
+    fn test_find_players_with_lowest_score() {
+        let player_scores = vec![
+            vec![10, 20, 1],
+            vec![20, 30, 2],
+            vec![30, 40, 3],
+        ];
+        let players_with_lowest_score = ScorePage::find_players_with_lowest_score(&player_scores);
+        assert_eq!(players_with_lowest_score.len(), 1);
+        assert_eq!(players_with_lowest_score[0], 2);
+    }
+
+    #[test]
+    fn test_find_players_with_lowest_score_empty() {
+        let player_scores = vec![];
+        let players_with_lowest_score = ScorePage::find_players_with_lowest_score(&player_scores);
+        assert_eq!(players_with_lowest_score.len(), 0);
+    }
+
+    #[test]
+    fn test_find_players_with_lowest_score_tie() {
+        let player_scores = vec![
+            vec![10, 20, 20],
+            vec![20, 30, 30],
+            vec![30, 40, 10],
+        ];
+        let players_with_lowest_score = ScorePage::find_players_with_lowest_score(&player_scores);
+        assert_eq!(players_with_lowest_score.len(), 2);
+        assert!(players_with_lowest_score.contains(&0));
+        assert!(players_with_lowest_score.contains(&2));
+    }
+
+    #[test]
+    fn test_find_players_with_highest_score() {
+        let player_scores = vec![
+            vec![10, 20, 1],
+            vec![20, 30, 2],
+            vec![30, 40, 3],
+        ];
+        let players_with_highest_score = ScorePage::find_players_with_highest_score(&player_scores);
+        assert_eq!(players_with_highest_score.len(), 1);
+        assert_eq!(players_with_highest_score[0], 1);
+    }
+
+    #[test]
+    fn test_find_players_with_highest_score_empty() {
+        let player_scores = vec![];
+        let players_with_highest_score = ScorePage::find_players_with_highest_score(&player_scores);
+        assert_eq!(players_with_highest_score.len(), 0);
+    }
+
+    #[test]
+    fn test_find_players_with_highest_score_tie() {
+        let player_scores = vec![
+            vec![10, 20, 40],
+            vec![20, 30, 30],
+            vec![30, 40, 20],
+        ];
+        let players_with_highest_score = ScorePage::find_players_with_highest_score(&player_scores);
+        assert_eq!(players_with_highest_score.len(), 2);
+        assert!(players_with_highest_score.contains(&1));
+        assert!(players_with_highest_score.contains(&2));
     }
 }
