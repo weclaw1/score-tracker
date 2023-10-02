@@ -8,6 +8,8 @@ mod remove_turn_button;
 mod score_page;
 mod tallied_score_cell;
 mod tallied_score_row;
+mod timer;
+mod timer_editor;
 mod timer_page;
 mod turn_number;
 mod turn_score_cell;

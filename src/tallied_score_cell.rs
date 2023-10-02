@@ -45,7 +45,7 @@ impl FactoryComponent for TalliedScoreCell {
             gtk::Label {
                 set_halign: gtk::Align::Center,
                 set_hexpand: true,
-                add_css_class: "title-2",
+                set_css_classes: &["title-2"],
                 set_width_chars: 10,
 
                 #[watch]

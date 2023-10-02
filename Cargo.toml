@@ -15,4 +15,4 @@ features = ["macros", "libadwaita"]
 
 [dependencies.relm4-icons]
 version = "0.6.0"
-features = ["table", "hourglass", "plus", "person-add-regular", "person-subtract-regular", "cross-filled"]
+features = ["table", "hourglass", "plus", "person-add-regular", "person-subtract-regular", "cross-filled", "play", "pause", "refresh", "user-trash"]

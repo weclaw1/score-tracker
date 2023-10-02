@@ -1,5 +1,26 @@
 use std::collections::HashSet;
+use std::fmt::Display;
 use std::hash::Hash;
+use std::time::Duration;
+
+pub struct HumanReadableDuration(Duration);
+
+impl HumanReadableDuration {
+    pub fn new(duration: Duration) -> Self {
+        Self(duration)
+    }
+}
+
+impl Display for HumanReadableDuration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let seconds = self.0.as_secs();
+        let hours = seconds / 3600;
+        let minutes = (seconds % 3600) / 60;
+        let seconds = seconds % 60;
+
+        write!(f, "{:02}:{:02}:{:02}", hours, minutes, seconds)
+    }
+}
 
 pub fn symetric_difference_between_two_arrays<'a, T>(a: &'a [T], b: &'a [T]) -> Vec<&'a T>
 where

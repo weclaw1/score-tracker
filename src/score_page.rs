@@ -210,7 +210,7 @@ impl SimpleComponent for ScorePage {
                         set_margin_start: 5,
                         set_halign: gtk::Align::End,
                         set_icon_name: icon_name::PERSON_ADD_REGULAR,
-                        add_css_class: "success",
+                        set_css_classes: &["success"],
                         connect_clicked => ScorePageInput::AddPlayer,
                     },
 
@@ -236,7 +236,7 @@ impl SimpleComponent for ScorePage {
                         set_halign: gtk::Align::End,
                         set_valign: gtk::Align::End,
                         set_icon_name: icon_name::PLUS,
-                        add_css_class: "suggested-action",
+                        set_css_classes: &["suggested-action"],
                         connect_clicked => ScorePageInput::AddRow,
                     },
                 },
@@ -278,7 +278,7 @@ impl SimpleComponent for ScorePage {
                         set_margin_end: 5,
                         set_halign: gtk::Align::Start,
                         set_icon_name: icon_name::PERSON_SUBTRACT_REGULAR,
-                        add_css_class: "error",
+                        set_css_classes: &["error"],
 
                         #[watch]
                         set_sensitive: model.players > 1,

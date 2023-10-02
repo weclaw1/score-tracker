@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
 use adw::prelude::*;
 use heck::ToTitleCase;
@@ -122,7 +122,9 @@ impl SimpleComponent for App {
             .launch((INITIAL_PLAYERS, INITIAL_SCORE_ROWS))
             .detach();
 
-        let timer_page = TimerPage::builder().launch(()).detach();
+        let timer_page = TimerPage::builder()
+            .launch(Duration::from_secs(3600))
+            .detach();
 
         let model = App {
             page,
