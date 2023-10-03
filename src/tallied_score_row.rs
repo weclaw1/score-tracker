@@ -28,7 +28,6 @@ impl SimpleComponent for TalliedScoreRow {
             set_hexpand: true,
             set_spacing: 5,
             set_halign: gtk::Align::Fill,
-            set_valign: gtk::Align::End,
 
             #[local_ref]
             tallied_score_cells_box -> gtk::Box {

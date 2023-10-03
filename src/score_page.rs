@@ -234,6 +234,7 @@ impl SimpleComponent for ScorePage {
                         },
                     },
 
+                    #[name="add_row_button"]
                     gtk::Button {
                         set_margin_start: 5,
                         set_halign: gtk::Align::End,
@@ -253,7 +254,6 @@ impl SimpleComponent for ScorePage {
 
                     #[name="main_column_scrolled_window"]
                     gtk::ScrolledWindow {
-                        set_margin_bottom: 4,
                         set_vexpand: true,
                         set_valign: gtk::Align::Fill,
                         set_vscrollbar_policy: gtk::PolicyType::External,
@@ -294,7 +294,6 @@ impl SimpleComponent for ScorePage {
                         set_vexpand: true,
                         set_vscrollbar_policy: gtk::PolicyType::Automatic,
                         set_hscrollbar_policy: gtk::PolicyType::Never,
-                        set_margin_bottom: 39,
 
                         #[local_ref]
                         remove_turn_buttons_box -> gtk::Box {
@@ -302,6 +301,11 @@ impl SimpleComponent for ScorePage {
                             set_spacing: 5,
                             set_orientation: gtk::Orientation::Vertical,
                         },
+                    },
+
+                    #[name="spacer_box"]
+                    gtk::Box{
+                        set_hexpand: true,
                     },
                 }
             },
@@ -410,6 +414,11 @@ impl SimpleComponent for ScorePage {
         let turn_numbers_box = model.turn_numbers.widget();
         let remove_turn_buttons_box = model.remove_turn_buttons.widget();
         let widgets = view_output!();
+
+        let bottom_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
+        bottom_size_group.add_widget(&widgets.add_row_button);
+        bottom_size_group.add_widget(model.tallied_score_row.widget());
+        bottom_size_group.add_widget(&widgets.spacer_box);
 
         sender.input(ScorePageInput::UpdatePlayersWithHighestScore);
         sender.input(ScorePageInput::UpdatePlayersWithLowestScore);
