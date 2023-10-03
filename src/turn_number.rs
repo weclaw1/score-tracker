@@ -21,8 +21,9 @@ impl FactoryComponent for TurnNumber {
 
     view! {
         gtk::Label {
-            set_margin_top: 7,
-            set_margin_bottom: 8,
+            //set_margin_top: 7,
+            //set_margin_bottom: 8,
+            set_vexpand: true,
             #[watch]
             set_label: &format!("{}.", self.value),
         }

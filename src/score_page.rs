@@ -227,6 +227,7 @@ impl SimpleComponent for ScorePage {
                         turn_numbers_box -> gtk::Box {
                             set_margin_start: 5,
                             set_hexpand: true,
+                            set_valign: gtk::Align::Start,
                             set_halign: gtk::Align::End,
                             set_spacing: 5,
                             set_orientation: gtk::Orientation::Vertical,
@@ -262,7 +263,6 @@ impl SimpleComponent for ScorePage {
                         turn_score_row_box -> gtk::Box {
                             set_spacing: 5,
                             set_hexpand: true,
-                            set_vexpand: true,
                             set_orientation: gtk::Orientation::Vertical,
                             set_halign: gtk::Align::Fill,
                         },
@@ -298,14 +298,13 @@ impl SimpleComponent for ScorePage {
 
                         #[local_ref]
                         remove_turn_buttons_box -> gtk::Box {
-                            set_margin_end: 5,
                             set_halign: gtk::Align::Start,
                             set_spacing: 5,
                             set_orientation: gtk::Orientation::Vertical,
                         },
                     },
                 }
-            }
+            },
         }
     }
 
@@ -389,6 +388,11 @@ impl SimpleComponent for ScorePage {
         }
 
         let tallied_score_row = TalliedScoreRow::builder().launch(initial_players).detach();
+
+        let size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Vertical);
+        size_group.add_widget(turn_numbers.widget());
+        size_group.add_widget(turn_score_rows.widget());
+        size_group.add_widget(remove_turn_buttons.widget());
 
         let model = Self {
             players: initial_players,
