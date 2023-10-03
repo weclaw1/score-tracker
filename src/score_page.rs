@@ -2,7 +2,9 @@ use relm4::gtk::prelude::*;
 use relm4::{factory::FactoryVecDeque, prelude::*};
 use relm4_icons::icon_name;
 
+use crate::remove_turn_button::RemoveTurnButtonOutput;
 use crate::tallied_score_row::TalliedScoreRowInput;
+use crate::turn_score_row::TurnScoreRowOutput;
 use crate::utils;
 use crate::{
     player_name_row::{PlayerNameRow, PlayerNameRowInput},
@@ -353,23 +355,38 @@ impl SimpleComponent for ScorePage {
         let (initial_players, initial_score_rows) = init;
         let player_name_row = PlayerNameRow::builder().launch(initial_players).detach();
 
-        let turn_numbers = FactoryVecDeque::from_iter(
-            vec![(); initial_score_rows],
-            gtk::Box::default(),
-            sender.input_sender(),
-        );
+        let turn_numbers =
+            FactoryVecDeque::from_iter(vec![(); initial_score_rows], gtk::Box::default());
 
-        let remove_turn_buttons = FactoryVecDeque::from_iter(
-            vec![(); initial_score_rows],
-            gtk::Box::default(),
-            sender.input_sender(),
-        );
+        let mut remove_turn_buttons = FactoryVecDeque::builder(gtk::Box::default())
+            .launch()
+            .forward(sender.input_sender(), |msg| match msg {
+                RemoveTurnButtonOutput::RemoveScoreRow(index) => {
+                    ScorePageInput::RemoveScoreRow(index)
+                }
+            });
 
-        let turn_score_rows = FactoryVecDeque::from_iter(
-            vec![initial_players; initial_score_rows],
-            gtk::Box::default(),
-            sender.input_sender(),
-        );
+        {
+            let mut remove_turn_buttons = remove_turn_buttons.guard();
+            for _ in 0..initial_score_rows {
+                remove_turn_buttons.push_back(());
+            }
+        }
+
+        let mut turn_score_rows = FactoryVecDeque::builder(gtk::Box::default())
+            .launch()
+            .forward(sender.input_sender(), |msg| match msg {
+                TurnScoreRowOutput::ScoreChanged(turn_row_index, player_index, score) => {
+                    ScorePageInput::ScoreChanged(turn_row_index, player_index, score)
+                }
+            });
+
+        {
+            let mut turn_score_rows = turn_score_rows.guard();
+            for _ in 0..initial_score_rows {
+                turn_score_rows.push_back(initial_players);
+            }
+        }
 
         let tallied_score_row = TalliedScoreRow::builder().launch(initial_players).detach();
 

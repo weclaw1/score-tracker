@@ -1,8 +1,6 @@
 use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
-use crate::player_name_row::PlayerNameRowInput;
-
 pub struct PlayerNameCell {
     value: gtk::EntryBuffer,
 }
@@ -13,7 +11,6 @@ impl FactoryComponent for PlayerNameCell {
     type Input = ();
     type Output = ();
     type CommandOutput = ();
-    type ParentInput = PlayerNameRowInput;
     type ParentWidget = gtk::Box;
 
     view! {

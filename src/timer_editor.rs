@@ -1,6 +1,7 @@
 use std::time::Duration;
 
-use relm4::gtk::{prelude::*, Inhibit};
+use relm4::gtk::glib::Propagation;
+use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
 pub struct TimerEditor {
@@ -54,9 +55,9 @@ impl SimpleComponent for TimerEditor {
                     let value = spin_button.value() as u8;
                     if value < 10 {
                         spin_button.set_text(&format!("0{}", value));
-                        return Inhibit(true)
+                        return Propagation::Stop
                     }
-                    Inhibit(false)
+                    Propagation::Proceed
                 },
                 connect_value_changed[sender] => move |spin_button| {
                     sender.input(TimerEditorInput::SetHours(spin_button.value() as u8));
@@ -76,9 +77,9 @@ impl SimpleComponent for TimerEditor {
                     let value = spin_button.value() as u8;
                     if value < 10 {
                         spin_button.set_text(&format!("0{}", value));
-                        return Inhibit(true)
+                        return Propagation::Stop
                     }
-                    Inhibit(false)
+                    Propagation::Proceed
                 },
                 connect_value_changed[sender] => move |spin_button| {
                     sender.input(TimerEditorInput::SetMinutes(spin_button.value() as u8));
@@ -98,9 +99,9 @@ impl SimpleComponent for TimerEditor {
                     let value = spin_button.value() as u8;
                     if value < 10 {
                         spin_button.set_text(&format!("0{}", value));
-                        return Inhibit(true)
+                        return Propagation::Stop
                     }
-                    Inhibit(false)
+                    Propagation::Proceed
                 },
                 connect_value_changed[sender] => move |spin_button| {
                     sender.input(TimerEditorInput::SetSeconds(spin_button.value() as u8));

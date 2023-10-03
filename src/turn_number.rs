@@ -1,8 +1,6 @@
 use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
-use crate::score_page::ScorePageInput;
-
 #[derive(Debug, Clone)]
 pub enum TurnNumberInput {
     UpdateTurnNumber,
@@ -19,7 +17,6 @@ impl FactoryComponent for TurnNumber {
     type Input = TurnNumberInput;
     type Output = ();
     type CommandOutput = ();
-    type ParentInput = ScorePageInput;
     type ParentWidget = gtk::Box;
 
     view! {

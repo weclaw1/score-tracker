@@ -1,8 +1,6 @@
 use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
-use crate::tallied_score_row::TalliedScoreRowInput;
-
 #[allow(clippy::enum_variant_names)]
 #[derive(Debug)]
 pub enum TalliedScoreCellInput {
@@ -33,7 +31,6 @@ impl FactoryComponent for TalliedScoreCell {
     type Input = TalliedScoreCellInput;
     type Output = ();
     type CommandOutput = ();
-    type ParentInput = TalliedScoreRowInput;
     type ParentWidget = gtk::Box;
 
     view! {

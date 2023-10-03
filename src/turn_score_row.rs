@@ -2,8 +2,7 @@ use relm4::factory::FactoryVecDeque;
 use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
-use crate::score_page::ScorePageInput;
-use crate::turn_score_cell::TurnScoreCell;
+use crate::turn_score_cell::{TurnScoreCell, TurnScoreCellOutput};
 
 pub struct TurnScoreRow {
     turn_row_index: DynamicIndex,
@@ -28,7 +27,6 @@ impl FactoryComponent for TurnScoreRow {
     type Input = TurnScoreRowInput;
     type Output = TurnScoreRowOutput;
     type CommandOutput = ();
-    type ParentInput = ScorePageInput;
     type ParentWidget = gtk::Box;
 
     view! {
@@ -65,18 +63,20 @@ impl FactoryComponent for TurnScoreRow {
         }
     }
 
-    fn forward_to_parent(output: Self::Output) -> Option<Self::ParentInput> {
-        Some(match output {
-            TurnScoreRowOutput::ScoreChanged(turn_row_index, player_index, score) => {
-                ScorePageInput::ScoreChanged(turn_row_index, player_index, score)
-            }
-        })
-    }
-
     fn init_model(init: Self::Init, index: &DynamicIndex, sender: FactorySender<Self>) -> Self {
-        let mut turn_score_cells = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        for _ in 1..=init {
-            turn_score_cells.guard().push_back(0);
+        let mut turn_score_cells = FactoryVecDeque::builder(gtk::Box::default())
+            .launch()
+            .forward(sender.input_sender(), |msg| match msg {
+                TurnScoreCellOutput::ScoreChanged(player_index, score) => {
+                    TurnScoreRowInput::ScoreChanged(player_index, score)
+                }
+            });
+
+        {
+            let mut turn_score_cells = turn_score_cells.guard();
+            for _ in 0..init {
+                turn_score_cells.push_back(0);
+            }
         }
 
         Self {

@@ -10,9 +10,9 @@ anyhow = "1.0.75"
 heck = "0.4.1"
 
 [dependencies.relm4]
-version = "0.6.2"
+version = "0.7.0-beta.1"
 features = ["macros", "libadwaita"]
 
 [dependencies.relm4-icons]
-version = "0.6.0"
-features = ["table", "hourglass", "plus", "person-add-regular", "person-subtract-regular", "cross-filled", "play", "pause", "refresh", "user-trash"]
+version = "0.7.0-alpha.2"
+features = ["table", "hourglass", "plus", "person-add-regular", "person-subtract-regular", "cross-filled", "play", "pause", "refresh", "delete-filled"]

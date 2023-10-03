@@ -2,8 +2,6 @@ use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 use relm4_icons::icon_name;
 
-use crate::score_page::ScorePageInput;
-
 #[derive(Debug)]
 pub enum RemoveTurnButtonOutput {
     RemoveScoreRow(DynamicIndex),
@@ -17,7 +15,6 @@ impl FactoryComponent for RemoveTurnButton {
     type Input = ();
     type Output = RemoveTurnButtonOutput;
     type CommandOutput = ();
-    type ParentInput = ScorePageInput;
     type ParentWidget = gtk::Box;
 
     view! {
@@ -30,11 +27,5 @@ impl FactoryComponent for RemoveTurnButton {
 
     fn init_model(_init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {
         Self
-    }
-
-    fn forward_to_parent(output: Self::Output) -> Option<Self::ParentInput> {
-        Some(match output {
-            RemoveTurnButtonOutput::RemoveScoreRow(index) => ScorePageInput::RemoveScoreRow(index),
-        })
     }
 }

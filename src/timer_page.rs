@@ -36,9 +36,12 @@ impl SimpleComponent for TimerPage {
     fn init(
         init: Self::Init,
         root: &Self::Root,
-        sender: ComponentSender<Self>,
+        _sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut timers = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
+        let mut timers = FactoryVecDeque::builder(gtk::Box::default())
+            .launch()
+            .detach();
+
         timers.guard().push_back(init);
 
         let model = TimerPage { timers };

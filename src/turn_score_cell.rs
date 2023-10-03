@@ -1,8 +1,6 @@
 use relm4::gtk::prelude::WidgetExt;
 use relm4::prelude::*;
 
-use crate::turn_score_row::TurnScoreRowInput;
-
 #[derive(Debug)]
 pub enum TurnScoreCellOutput {
     ScoreChanged(DynamicIndex, i32),
@@ -18,7 +16,6 @@ impl FactoryComponent for TurnScoreCell {
     type Input = ();
     type Output = TurnScoreCellOutput;
     type CommandOutput = ();
-    type ParentInput = TurnScoreRowInput;
     type ParentWidget = gtk::Box;
 
     view! {
@@ -34,14 +31,6 @@ impl FactoryComponent for TurnScoreCell {
                 sender.output(TurnScoreCellOutput::ScoreChanged(index.clone(), spin_button.value() as i32));
             },
         }
-    }
-
-    fn forward_to_parent(output: Self::Output) -> Option<Self::ParentInput> {
-        Some(match output {
-            TurnScoreCellOutput::ScoreChanged(player_index, score) => {
-                TurnScoreRowInput::ScoreChanged(player_index, score)
-            }
-        })
     }
 
     fn init_model(init: Self::Init, _index: &DynamicIndex, _sender: FactorySender<Self>) -> Self {

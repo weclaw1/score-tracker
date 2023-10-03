@@ -113,7 +113,6 @@ impl FactoryComponent for Timer {
     type Input = TimerInput;
     type Output = ();
     type CommandOutput = TimerCommandOutput;
-    type ParentInput = ();
     type ParentWidget = gtk::Box;
 
     view! {
@@ -145,6 +144,8 @@ impl FactoryComponent for Timer {
                         Some(TimerState::Running(_, _)) => {
                             gtk::Button {
                                 set_icon_name: icon_name::PAUSE,
+                                set_width_request: 40,
+                                set_height_request: 40,
                                 set_css_classes: &["circular"],
                                 set_halign: gtk::Align::Center,
                                 connect_clicked => TimerInput::Pause,
@@ -160,16 +161,20 @@ impl FactoryComponent for Timer {
                                     set_icon_name: icon_name::REFRESH,
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
+                                    set_valign: gtk::Align::Center,
                                     connect_clicked => TimerInput::Reset,
                                 },
                                 gtk::Button {
                                     set_icon_name: icon_name::PLAY,
+                                    set_width_request: 40,
+                                    set_height_request: 40,
                                     set_css_classes: &["circular", "suggested-action"],
                                     set_halign: gtk::Align::Center,
                                     connect_clicked => TimerInput::Start,
                                 },
                                 gtk::Button {
-                                    set_icon_name: icon_name::USER_TRASH,
+                                    set_icon_name: icon_name::DELETE_FILLED,
+                                    set_valign: gtk::Align::Center,
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
                                     connect_clicked => TimerInput::Remove,
@@ -185,12 +190,15 @@ impl FactoryComponent for Timer {
 
                                 gtk::Button {
                                     set_icon_name: icon_name::PLAY,
+                                    set_width_request: 40,
+                                    set_height_request: 40,
                                     set_css_classes: &["circular", "suggested-action"],
                                     set_halign: gtk::Align::Center,
                                     connect_clicked => TimerInput::Start,
                                 },
                                 gtk::Button {
-                                    set_icon_name: icon_name::USER_TRASH,
+                                    set_icon_name: icon_name::DELETE_FILLED,
+                                    set_valign: gtk::Align::Center,
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
                                     connect_clicked => TimerInput::Remove,
@@ -200,6 +208,8 @@ impl FactoryComponent for Timer {
                         None => {
                             gtk::Button {
                                 set_icon_name: icon_name::PLAY,
+                                set_width_request: 40,
+                                set_height_request: 40,
                                 set_css_classes: &["circular", "suggested-action"],
                                 set_halign: gtk::Align::Center,
                                 #[watch]
