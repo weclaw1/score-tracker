@@ -19,8 +19,8 @@ impl FactoryComponent for RemoveTurnButton {
 
     view! {
         gtk::Button {
-            set_icon_name: icon_name::CROSS_FILLED,
-            set_css_classes: &["destructive-action"],
+            set_icon_name: icon_name::CROSS,
+            set_css_classes: &["circular", "destructive-action"],
             connect_clicked[sender, index] => move |_| sender.output(RemoveTurnButtonOutput::RemoveScoreRow(index.clone())),
         },
     }
