@@ -5,7 +5,7 @@ use relm4_icons::icon_name;
 use crate::remove_turn_button::RemoveTurnButtonOutput;
 use crate::tallied_score_row::TalliedScoreRowInput;
 use crate::turn_score_row::TurnScoreRowOutput;
-use crate::{utils, fl};
+use crate::{fl, utils};
 use crate::{
     player_name_row::{PlayerNameRow, PlayerNameRowInput},
     remove_turn_button::RemoveTurnButton,

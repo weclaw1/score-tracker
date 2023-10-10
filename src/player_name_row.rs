@@ -35,9 +35,11 @@ impl SimpleComponent for PlayerNameRow {
         match message {
             PlayerNameRowInput::AddPlayer => {
                 let new_player_number = self.player_name_cells.guard().len() + 1;
-                self.player_name_cells
-                    .guard()
-                    .push_back(format!("{} {}", fl!("player"), new_player_number));
+                self.player_name_cells.guard().push_back(format!(
+                    "{} {}",
+                    fl!("player"),
+                    new_player_number
+                ));
             }
             PlayerNameRowInput::RemovePlayer => {
                 self.player_name_cells.guard().pop_back();

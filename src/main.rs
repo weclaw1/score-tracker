@@ -2,6 +2,7 @@ use app::{App, Page};
 use relm4::RelmApp;
 
 mod app;
+mod localization;
 mod player_name_cell;
 mod player_name_row;
 mod remove_turn_button;
@@ -15,7 +16,6 @@ mod turn_number;
 mod turn_score_cell;
 mod turn_score_row;
 mod utils;
-mod localization;
 
 fn main() {
     let app = RelmApp::new("com.github.weclaw1.ScoreTracker");
