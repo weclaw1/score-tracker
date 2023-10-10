@@ -5,7 +5,7 @@ use relm4_icons::icon_name;
 use crate::remove_turn_button::RemoveTurnButtonOutput;
 use crate::tallied_score_row::TalliedScoreRowInput;
 use crate::turn_score_row::TurnScoreRowOutput;
-use crate::utils;
+use crate::{utils, fl};
 use crate::{
     player_name_row::{PlayerNameRow, PlayerNameRowInput},
     remove_turn_button::RemoveTurnButton,
@@ -195,7 +195,6 @@ impl SimpleComponent for ScorePage {
 
     view! {
         gtk::ScrolledWindow {
-            set_hscrollbar_policy: gtk::PolicyType::Never,
             gtk::Box {
                 set_orientation: gtk::Orientation::Horizontal,
                 set_hexpand: true,
@@ -213,6 +212,7 @@ impl SimpleComponent for ScorePage {
                         set_halign: gtk::Align::End,
                         set_icon_name: icon_name::PERSON_ADD_REGULAR,
                         set_css_classes: &["success"],
+                        set_tooltip_text: Some(fl!("add_player")),
                         connect_clicked => ScorePageInput::AddPlayer,
                     },
 
@@ -241,6 +241,7 @@ impl SimpleComponent for ScorePage {
                         set_valign: gtk::Align::End,
                         set_icon_name: icon_name::PLUS,
                         set_css_classes: &["suggested-action"],
+                        set_tooltip_text: Some(fl!("add_turn")),
                         connect_clicked => ScorePageInput::AddRow,
                     },
                 },
@@ -281,6 +282,7 @@ impl SimpleComponent for ScorePage {
                         set_halign: gtk::Align::Start,
                         set_icon_name: icon_name::PERSON_SUBTRACT_REGULAR,
                         set_css_classes: &["error"],
+                        set_tooltip_text: Some(fl!("remove_player")),
 
                         #[watch]
                         set_sensitive: model.players > 1,

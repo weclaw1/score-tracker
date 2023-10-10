@@ -1,11 +1,10 @@
 use std::{str::FromStr, time::Duration};
 
 use adw::prelude::*;
-use heck::ToTitleCase;
 use relm4::prelude::*;
 use relm4_icons::icon_name;
 
-use crate::{score_page::ScorePage, timer_page::TimerPage};
+use crate::{score_page::ScorePage, timer_page::TimerPage, fl};
 
 const INITIAL_PLAYERS: usize = 2;
 const INITIAL_SCORE_ROWS: usize = 1;
@@ -14,6 +13,15 @@ const INITIAL_SCORE_ROWS: usize = 1;
 pub enum Page {
     Score,
     Timer,
+}
+
+impl Page {
+    pub fn to_translated_string(&self) -> String {
+        match self {
+            Page::Score => fl!("score").to_owned(),
+            Page::Timer => fl!("timer").to_owned(),
+        }
+    }
 }
 
 impl std::fmt::Display for Page {
@@ -69,7 +77,7 @@ impl SimpleComponent for App {
                     set_title_widget = &adw::ViewSwitcherTitle {
                         set_stack: Some(&stack),
                         #[watch]
-                        set_title: model.page.to_string().to_title_case().as_str(),
+                        set_title: &model.page.to_translated_string(),
                         #[chain(build())]
                         bind_property: ("title-visible", &view_bar, "reveal"),
                     },
@@ -88,10 +96,10 @@ impl SimpleComponent for App {
                         },
                         set_vexpand: true,
 
-                        add_titled[Some("score"), "Score"] = model.score_page.widget() {} -> {
+                        add_titled[Some("score"), fl!("score")] = model.score_page.widget() {} -> {
                             set_icon_name: Some(icon_name::TABLE),
                         },
-                        add_titled[Some("timer"), "Timer"] = model.timer_page.widget() {} -> {
+                        add_titled[Some("timer"), fl!("timer")] = model.timer_page.widget() {} -> {
                             set_icon_name: Some(icon_name::HOURGLASS),
                         },
                     },
@@ -123,7 +131,7 @@ impl SimpleComponent for App {
             .detach();
 
         let timer_page = TimerPage::builder()
-            .launch(Duration::from_secs(3600))
+            .launch(Duration::from_secs(0))
             .detach();
 
         let model = App {

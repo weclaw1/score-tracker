@@ -2,6 +2,7 @@ use relm4::factory::FactoryVecDeque;
 use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 
+use crate::fl;
 use crate::player_name_cell::PlayerNameCell;
 
 pub struct PlayerNameRow {
@@ -36,7 +37,7 @@ impl SimpleComponent for PlayerNameRow {
                 let new_player_number = self.player_name_cells.guard().len() + 1;
                 self.player_name_cells
                     .guard()
-                    .push_back(format!("Player {}", new_player_number));
+                    .push_back(format!("{} {}", fl!("player"), new_player_number));
             }
             PlayerNameRowInput::RemovePlayer => {
                 self.player_name_cells.guard().pop_back();
@@ -50,7 +51,7 @@ impl SimpleComponent for PlayerNameRow {
         _sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
         let player_name_cells = FactoryVecDeque::from_iter(
-            (1..=init).map(|n| format!("Player {}", n)),
+            (1..=init).map(|n| format!("{} {}", fl!("player"), n)),
             gtk::Box::default(),
         );
 

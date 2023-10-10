@@ -4,6 +4,7 @@ use relm4::gtk::prelude::*;
 use relm4::prelude::*;
 use relm4_icons::icon_name;
 
+use crate::fl;
 use crate::timer_editor::{TimerEditor, TimerEditorOutput};
 use crate::utils::HumanReadableDuration;
 
@@ -148,6 +149,7 @@ impl FactoryComponent for Timer {
                                 set_height_request: 40,
                                 set_css_classes: &["circular"],
                                 set_halign: gtk::Align::Center,
+                                set_tooltip_text: Some(fl!("pause")),
                                 connect_clicked => TimerInput::Pause,
                             }
                         }
@@ -162,6 +164,7 @@ impl FactoryComponent for Timer {
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
                                     set_valign: gtk::Align::Center,
+                                    set_tooltip_text: Some(fl!("reset")),
                                     connect_clicked => TimerInput::Reset,
                                 },
                                 gtk::Button {
@@ -170,6 +173,7 @@ impl FactoryComponent for Timer {
                                     set_height_request: 40,
                                     set_css_classes: &["circular", "suggested-action"],
                                     set_halign: gtk::Align::Center,
+                                    set_tooltip_text: Some(fl!("start")),
                                     connect_clicked => TimerInput::Start,
                                 },
                                 gtk::Button {
@@ -177,6 +181,7 @@ impl FactoryComponent for Timer {
                                     set_valign: gtk::Align::Center,
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
+                                    set_tooltip_text: Some(fl!("remove")),
                                     connect_clicked => TimerInput::Remove,
                                 },
                             }
@@ -194,6 +199,7 @@ impl FactoryComponent for Timer {
                                     set_height_request: 40,
                                     set_css_classes: &["circular", "suggested-action"],
                                     set_halign: gtk::Align::Center,
+                                    set_tooltip_text: Some(fl!("start")),
                                     connect_clicked => TimerInput::Start,
                                 },
                                 gtk::Button {
@@ -201,6 +207,7 @@ impl FactoryComponent for Timer {
                                     set_valign: gtk::Align::Center,
                                     set_css_classes: &["circular"],
                                     set_halign: gtk::Align::Center,
+                                    set_tooltip_text: Some(fl!("remove")),
                                     connect_clicked => TimerInput::Remove,
                                 },
                             }
