@@ -16,9 +16,9 @@
       <image>https://raw.githubusercontent.com/weclaw1/score-tracker/main/src/resources/screenshot.png</image>
     </screenshot>
   </screenshots>
-  <releases>
-    <!-- <release version="1.0.0" date="2023-10-11"/> -->
-  </releases>
+  <!-- <releases>
+    <release version="1.0.0" date="2023-10-11"/>
+  </releases> -->
   <content_rating type="oars-1.0"/>
   <developer_name>Robert Węcławski</developer_name>
   <url type="homepage">https://github.com/weclaw1/score-tracker</url>

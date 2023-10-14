@@ -29,3 +29,4 @@ modules:
   - cargo-sources.json
   - type: git
     url: https://github.com/weclaw1/score-tracker.git
+    branch: main
