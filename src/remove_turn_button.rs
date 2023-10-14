@@ -24,7 +24,7 @@ impl FactoryComponent for RemoveTurnButton {
             set_icon_name: icon_name::CROSS,
             set_css_classes: &["circular", "destructive-action"],
             set_tooltip_text: Some(fl!("remove_turn")),
-            connect_clicked[sender, index] => move |_| sender.output(RemoveTurnButtonOutput::RemoveScoreRow(index.clone())),
+            connect_clicked[sender, index] => move |_| sender.output(RemoveTurnButtonOutput::RemoveScoreRow(index.clone())).unwrap(),
         },
     }
 

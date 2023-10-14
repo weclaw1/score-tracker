@@ -28,7 +28,7 @@ impl FactoryComponent for TurnScoreCell {
             set_numeric: true,
             set_value: self.score as f64,
             connect_value_changed[sender, index] => move |spin_button| {
-                sender.output(TurnScoreCellOutput::ScoreChanged(index.clone(), spin_button.value() as i32));
+                sender.output(TurnScoreCellOutput::ScoreChanged(index.clone(), spin_button.value() as i32)).unwrap();
             },
         }
     }

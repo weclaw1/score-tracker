@@ -54,18 +54,20 @@ impl FactoryComponent for TurnScoreRow {
                 self.turn_score_cells.guard().pop_back();
             }
             TurnScoreRowInput::ScoreChanged(player_index, score) => {
-                sender.output(TurnScoreRowOutput::ScoreChanged(
-                    self.turn_row_index.clone(),
-                    player_index,
-                    score,
-                ));
+                sender
+                    .output(TurnScoreRowOutput::ScoreChanged(
+                        self.turn_row_index.clone(),
+                        player_index,
+                        score,
+                    ))
+                    .unwrap();
             }
         }
     }
 
     fn init_model(init: Self::Init, index: &DynamicIndex, sender: FactorySender<Self>) -> Self {
-        let mut turn_score_cells = FactoryVecDeque::builder(gtk::Box::default())
-            .launch()
+        let mut turn_score_cells = FactoryVecDeque::builder()
+            .launch(gtk::Box::default())
             .forward(sender.input_sender(), |msg| match msg {
                 TurnScoreCellOutput::ScoreChanged(player_index, score) => {
                     TurnScoreRowInput::ScoreChanged(player_index, score)

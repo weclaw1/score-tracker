@@ -363,8 +363,8 @@ impl SimpleComponent for ScorePage {
         let turn_numbers =
             FactoryVecDeque::from_iter(vec![(); initial_score_rows], gtk::Box::default());
 
-        let mut remove_turn_buttons = FactoryVecDeque::builder(gtk::Box::default())
-            .launch()
+        let mut remove_turn_buttons = FactoryVecDeque::builder()
+            .launch(gtk::Box::default())
             .forward(sender.input_sender(), |msg| match msg {
                 RemoveTurnButtonOutput::RemoveScoreRow(index) => {
                     ScorePageInput::RemoveScoreRow(index)
@@ -378,8 +378,8 @@ impl SimpleComponent for ScorePage {
             }
         }
 
-        let mut turn_score_rows = FactoryVecDeque::builder(gtk::Box::default())
-            .launch()
+        let mut turn_score_rows = FactoryVecDeque::builder()
+            .launch(gtk::Box::default())
             .forward(sender.input_sender(), |msg| match msg {
                 TurnScoreRowOutput::ScoreChanged(turn_row_index, player_index, score) => {
                     ScorePageInput::ScoreChanged(turn_row_index, player_index, score)

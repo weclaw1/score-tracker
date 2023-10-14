@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Score Tracker
+Comment=Application for tracking player scores in card and board games
+Exec=score-tracker
+Icon=com.github.weclaw1.ScoreTracker
+Terminal=false
+StartupWMClass=score-tracker
+TryExec=score-tracker
+Categories=Utility;Game;
+X-Purism-FormFactor=Workstation;Mobile;

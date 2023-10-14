@@ -13,7 +13,7 @@ rust-embed = "8.0.0"
 i18n-embed-fl = "0.7.0"
 
 [dependencies.relm4]
-version = "0.7.0-beta.1"
+version = "0.7.0-beta.2"
 features = ["macros", "libadwaita"]
 
 [dependencies.relm4-icons]
