@@ -1,7 +1,13 @@
 [package]
 name = "score-tracker"
-version = "0.1.0"
+version = "1.0"
 edition = "2021"
+license = "MIT"
+description = "Score Tracker is an application for tracking player scores in card and board games."
+homepage = "https://github.com/weclaw1/score-tracker"
+repository = "https://github.com/weclaw1/score-tracker"
+readme = "README.md"
+authors = ["Robert Węcławski <r.weclawski@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
