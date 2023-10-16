@@ -1,5 +1,5 @@
 # Score Tracker
-![Score Tracker](https://raw.githubusercontent.com/weclaw1/score-tracker/main/src/resources/com.github.weclaw1.ScoreTracker.svg)
+![Score Tracker](https://raw.githubusercontent.com/weclaw1/score-tracker/main/src/resources/io.github.weclaw1.ScoreTracker.svg)
 
 **Score Tracker** is an application for tracking player scores in card and board games. It also contains additional functionality such as timer for measuring players turn times.
 
