@@ -10,7 +10,7 @@
       Score Tracker is an application for tracking player scores in card and board games. It also contains additional functionality such as timer for measuring players turn times.
     </p>
   </description>
-  <launchable type="desktop-id">com.github.weclaw1.ScoreTracker.desktop</launchable>
+  <launchable type="desktop-id">io.github.weclaw1.ScoreTracker.desktop</launchable>
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/weclaw1/score-tracker/main/src/resources/screenshot.png</image>
