@@ -34,7 +34,7 @@ sudo apk add gtk4.0-dev gcc libadwaita-dev
 Flatpak is the recommended install method.
 In order to install Score Tracker using Flatpak run:
 ```
-flatpak install flathub com.github.weclaw1.ScoreTracker
+flatpak install flathub io.github.weclaw1.ScoreTracker
 ```
 
 ### Precompiled binaries

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.github.weclaw1.ScoreTracker</id>
+  <id>io.github.weclaw1.ScoreTracker</id>
   <name>Score Tracker</name>
   <summary>Application for tracking player scores in card and board games</summary>
   <metadata_license>CC0-1.0</metadata_license>
@@ -26,7 +26,7 @@
   </requires>
 
   <releases>
-    <release version="1.0.0" date="2023-10-15" />
+    <release version="1.0.1" date="2023-10-16" />
   </releases>
   <content_rating type="oars-1.0"/>
   <developer_name>Robert Węcławski</developer_name>

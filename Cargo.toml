@@ -1,6 +1,6 @@
 [package]
 name = "score-tracker"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "MIT"
 description = "Score Tracker is an application for tracking player scores in card and board games."

@@ -18,7 +18,7 @@ mod turn_score_row;
 mod utils;
 
 fn main() {
-    let app = RelmApp::new("com.github.weclaw1.ScoreTracker");
+    let app = RelmApp::new("io.github.weclaw1.ScoreTracker");
     relm4_icons::initialize_icons();
     localization::init();
     app.run::<App>(Page::Score);

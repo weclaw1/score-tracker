@@ -1,4 +1,4 @@
-app-id: com.github.weclaw1.ScoreTracker
+app-id: io.github.weclaw1.ScoreTracker
 runtime: org.gnome.Platform
 runtime-version: '45'
 sdk: org.gnome.Sdk
@@ -21,10 +21,10 @@ modules:
   - cargo --offline fetch --manifest-path Cargo.toml
   - cargo --offline build --release
   - install -Dm755 ./target/release/score-tracker -t /app/bin/
-  - install -Dm644 ./src/resources/com.github.weclaw1.ScoreTracker.svg -t /app/share/icons/hicolor/scalable/apps/
-  - install -Dm644 ./src/resources/com.github.weclaw1.ScoreTracker-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
-  - install -Dm644 ./src/resources/com.github.weclaw1.ScoreTracker.desktop -t /app/share/applications/
-  - install -Dm644 ./src/resources/com.github.weclaw1.ScoreTracker.metainfo.xml -t /app/share/metainfo/
+  - install -Dm644 ./src/resources/io.github.weclaw1.ScoreTracker.svg -t /app/share/icons/hicolor/scalable/apps/
+  - install -Dm644 ./src/resources/io.github.weclaw1.ScoreTracker-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps/
+  - install -Dm644 ./src/resources/io.github.weclaw1.ScoreTracker.desktop -t /app/share/applications/
+  - install -Dm644 ./src/resources/io.github.weclaw1.ScoreTracker.metainfo.xml -t /app/share/metainfo/
   sources:
   - cargo-sources.json
   - type: git
